@@ -130,5 +130,11 @@ CREATE TABLE Orders
   FOREIGN KEY(Orders-id) REFERENCES Orders(Orders_id),
   FOREIGN KEY(Product_id) REFERENCES Products(Product_id))
   
+CREATE TABLE Deliveries(
+       DeliveryID INT PRIMARY KEY IDENTITY NOT NULL
+       , AddressID INT  FOREIGN KEY (AddressID) REFERENCES Address (AddressID)
+       , CompanyName NVARCHAR(50) NULL
+       , DepartureDate DATE NULL
+)
 
 GO
