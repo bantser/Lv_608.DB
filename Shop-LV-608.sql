@@ -1,19 +1,16 @@
 CREATE TABLE Products (
 
-	product_id integer PRIMARY KEY IDENTITY (1, 1) NOT NULL,
-	productName nvarchar (30) NOT NULL,
-	quantityInStock integer NOT NULL,
-	salesPrice numeric NOT NULL,
-	typeProduct nvarchar (30) NOT NULL,
-	gender nvarchar (1) NOT NULL,
-	season nvarchar (10) NOT NULL,
-	size nvarchar (2) NOT NULL,
-	brand_id integer,
-
-	FOREIGN KEY (brand_id) REFERENCES Brands (brand_id),
-
-	CHECK (quantityInStock>=0 AND salesPrice>=0)
-
+	ProductID integer PRIMARY KEY IDENTITY (1, 1) NOT NULL
+	, ProductName nvarchar (30) NULL
+	, QuantityInStock integer NULL
+	, SalesPrice numeric NULL
+	, TypeProduct nvarchar (30) NULL
+	, Gender nvarchar (1) NULL
+	, Season nvarchar (10) NULL
+	, Size nvarchar (2) NULL
+	, BrandID integer
+	FOREIGN KEY (BrandID) REFERENCES Brands (BrandID)
+	
 )
 
 CREATE TABLE Customers(
