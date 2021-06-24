@@ -55,7 +55,7 @@ CREATE TABLE PurchaseOrderDetails(
 
 CREATE TABLE Adress
 (
-	AddressID int PRIMARY KEY IDENTITY,
+	AddressID int PRIMARY KEY IDENTITY (1, 1),
 	AdressType int NOT NULL,
 	Appartament varchar(10) NOT NULL,
 	City varchar(30) NOT NULL,
