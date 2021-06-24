@@ -29,12 +29,13 @@ CREATE TABLE Customers(
 )
 
 CREATE TABLE Returns(
-       Return_ID INT NOT NULL PRIMARY KEY
+       Return_ID INT PRIMARY KEY IDENTITY NOT NULL
        , OrderDetail_ID INT NOT NULL
        , ReturnQuantity INT NOT NULL
        , ReturnDate DATE NOT NULL
        , ReturnReason NVARCHAR(50) NULL
        , ReturnStatus NVARCHAR(50) NOT NULL
+       FOREIGN KEY (OrderDetailId) REFERENCES OrderDetails (OrderDetailId)
 )
 
 CREATE TABLE PurchaseOrders(
