@@ -51,3 +51,14 @@ CREATE TABLE PurchaseOrderDetails(
 	Quantity INT NOT NULL,
 	Price NUMERIC NOT NULL
 )
+
+CREATE TABLE Adress
+(
+	AddressID INT PRIMARY KEY IDENTITY,
+	AdressType INT NOT NULL,
+	Appartament VARCHAR(10) NOT NULL,
+	City VARCHAR(30) NOT NULL,
+	Region VARCHAR(25)NOT NULL,
+	PostaCode INT NOT NULL
+)
+GO
