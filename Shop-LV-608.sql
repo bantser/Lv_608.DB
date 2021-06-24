@@ -19,3 +19,14 @@ CREATE TABLE Returns(
        , ReturnReason nvarchar(50) Null
        , ReturnStatus nvarchar(50) Not Null
 )
+
+CREATE TABLE Adress
+(
+	AddressID int PRIMARY KEY IDENTITY,
+	AdressType int NOT NULL,
+	Appartament Varchar(10) NOT NULL,
+	City Varchar(30) NOT NULL,
+	Region Varchar(25)NOT NULL,
+	PostaCode int NOT NULL
+)
+GO
