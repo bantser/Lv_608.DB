@@ -76,10 +76,10 @@ CREATE TABLE PurchaseOrderDetails(
 	Price NUMERIC NOT NULL
 )
 
-CREATE TABLE Adress
+CREATE TABLE Address
 (
 	AddressID int PRIMARY KEY IDENTITY (1, 1),
-	AdressType int NULL,
+	AddressType int NULL,
 	Appartament varchar(10) NULL,
 	City varchar(30)  NULL,
 	Region varchar(25) NULL,
