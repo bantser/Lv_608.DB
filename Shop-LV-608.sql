@@ -17,13 +17,13 @@ CREATE TABLE Brands(
 
 CREATE TABLE Suppliers(
      SupplID int NOT NULL PRIMARY KEY IDENTITY(1,1)
-    ,AddressID int NOT NULL
+    ,AddressID int FOREIGN KEY (AddressID) REFERENCES Addresses (AddressID)
     ,ContactName nvarchar(50) NULL
     ,Phone int NULL
     ,Email nvarchar(50) NULL,
     HomePage nvarchar(50))
 
-	CREATE TABLE BrandSuppliers(
+CREATE TABLE BrandSuppliers(
    BrandID int NOT NULL FOREIGN KEY REFERENCES Brands(BrandID)
   ,SupplID int NOT NULL FOREIGN KEY REFERENCES Suppliers(SupplID)
   PRIMARY KEY(BrandID,SupplID)
