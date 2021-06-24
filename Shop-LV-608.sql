@@ -30,11 +30,11 @@ CREATE TABLE Customers(
 
 CREATE TABLE Returns(
        Return_ID INT PRIMARY KEY IDENTITY NOT NULL
-       , OrderDetail_ID INT NOT NULL
-       , ReturnQuantity INT NOT NULL
-       , ReturnDate DATE NOT NULL
+       , OrderDetail_ID INT NULL
+       , ReturnQuantity INT NULL
+       , ReturnDate DATE NULL
        , ReturnReason NVARCHAR(50) NULL
-       , ReturnStatus NVARCHAR(50) NOT NULL
+       , ReturnStatus NVARCHAR(50) NULL
        FOREIGN KEY (OrderDetailId) REFERENCES OrderDetails (OrderDetailId)
 )
 
