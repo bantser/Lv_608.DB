@@ -26,11 +26,11 @@ CREATE TABLE Customers(
 
 CREATE TABLE Returns(
        Return_ID INT PRIMARY KEY IDENTITY NOT NULL
-       , OrderDetail_ID INT NULL
-       , ReturnQuantity INT NULL
-       , ReturnDate DATE NULL
-       , ReturnReason NVARCHAR(50) NULL
-       , ReturnStatus NVARCHAR(30) NULL
+       , OrderDetail_ID int NULL
+       , ReturnQuantity int NULL
+       , ReturnDate date NULL
+       , ReturnReason nvarchar(50) NULL
+       , ReturnStatus nvarchar(30) NULL
        FOREIGN KEY (OrderDetailId) REFERENCES OrderDetails (OrderDetailId)
 )
 
