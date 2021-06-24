@@ -17,5 +17,5 @@ CREATE TABLE Returns(
        , ReturnQuantity int Not Null
        , ReturnDate date Not null
        , ReturnReason nvarchar(50) Null
-       , ReturnStatus nvarchar(30) Not Null
+       , ReturnStatus nvarchar(50) Not Null
 )
