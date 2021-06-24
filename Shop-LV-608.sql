@@ -31,7 +31,7 @@ CREATE TABLE Returns(
        , ReturnQuantity INT NULL
        , ReturnDate DATE NULL
        , ReturnReason NVARCHAR(50) NULL
-       , ReturnStatus NVARCHAR(50) NULL
+       , ReturnStatus NVARCHAR(30) NULL
        FOREIGN KEY (OrderDetailId) REFERENCES OrderDetails (OrderDetailId)
 )
 
