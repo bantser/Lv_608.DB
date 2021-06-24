@@ -102,4 +102,33 @@ CREATE TABLE Employees (
 
 )
 
+CREATE TABLE Orders
+
+(   Orders_id int PRIMARY KEY IDENTITY (1,1) NOT NULL  ,
+    Customer_id int NOT NULL ,
+    Delivery_id int NOT NULL,
+    TotalCost numeric (18,2) NULL,
+    TotalDiscount numeric(18,2) NULL,
+    Empl_id int not NULL ,
+    OrderData datetime NULL,
+    InvoiceData datetime NULL,
+    PaymentMethod nvarchar (100) NULL,
+
+ FOREIGN KEY(Customer_id) REFERENCES Customers(Customer_id),
+ FOREIGN KEY(Delivery_id) REFERENCES Delivery(Delivery_id),
+ FOREIGN KEY(Empl_id) REFERENCES Employees(Empl_id))
+
+ CREATE TABLE OrderDetails
+ 
+ (   OrderDetail_id int PRIMARY KEY IDENTITY (1,1) NOT NULL ,
+     Order_id int NOT NULL,
+     Product_id int NOT NULL ,
+     DiscountPerUnit numeric (18,2) NULL,
+     PricePerUnit numeric (18,2) NULL,
+     Quantity integer NULL,
+
+  FOREIGN KEY(Orders-id) REFERENCES Orders(Orders_id),
+  FOREIGN KEY(Product_id) REFERENCES Products(Product_id))
+  
+
 GO
