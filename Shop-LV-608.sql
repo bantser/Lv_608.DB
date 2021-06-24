@@ -29,10 +29,10 @@ CREATE TABLE Customers(
 )
 
 CREATE TABLE Returns(
-       ReturnID int Not Null Primary Key
-       , OrderDetailID int Not Null
-       , ReturnQuantity int Not Null
-       , ReturnDate date Not null
-       , ReturnReason nvarchar(50) Null
-       , ReturnStatus nvarchar(50) Not Null
+       Return_ID INT NOT NULL PRIMARY KEY
+       , OrderDetail_ID INT NOT NULL
+       , ReturnQuantity INT NOT NULL
+       , ReturnDate DATE NOT NULL
+       , ReturnReason NVARCHAR(50) NULL
+       , ReturnStatus NVARCHAR(50) NOT NULL
 )
