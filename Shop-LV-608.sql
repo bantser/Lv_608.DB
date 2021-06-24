@@ -14,15 +14,14 @@ CREATE TABLE Products (
 )
 
 CREATE TABLE Customers(
-	CustomerID INT PRIMARY KEY IDENTITY(1, 1) NOT NULL
-	, FirstName NVARCHAR (30) NOT NULL
-	, LastName NVARCHAR (30) NOT NULL
-	, Gender NCHAR (1) NOT NULL
-	, DateOfBirth DATE NOT NULL
-	, Phone NCHAR (13) NOT NULL
-	, Email NVARCHAR (50) NOT NULL
-	, AdressID INT
-	FOREIGN KEY (Adress_id) REFERENCES Adress (Adress_id)
+	CustomerID int PRIMARY KEY IDENTITY(1, 1) NOT NULL
+	, FirstName nvarchar (30) NULL
+	, LastName nvarchar (30) NULL
+	, Gender nchar (1) NULL
+	, DateOfBirth date NULL
+	, Phone nchar (13) NULL
+	, Email nvarchar (50) NULL
+	, AdressID int FOREIGN KEY (Adress_id) REFERENCES Adress (Adress_id)
 )
 
 CREATE TABLE Returns(
