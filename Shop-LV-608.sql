@@ -9,6 +9,15 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+CREATE TABLE Addresses
+(
+	AddressID int PRIMARY KEY IDENTITY (1, 1),
+	AddressType int NULL,
+	Apartment varchar(10) NULL,
+	City varchar(30)  NULL,
+	Region varchar(25) NULL,
+	PostalCode int NULL
+)
 
 CREATE TABLE Brands(
        BrandID int NOT NULL PRIMARY KEY IDENTITY(1,1)
@@ -29,16 +38,6 @@ CREATE TABLE BrandSuppliers(
   PRIMARY KEY(BrandID,SupplID)
 )
 
-
-CREATE TABLE Addresses
-(
-	AddressID int PRIMARY KEY IDENTITY (1, 1),
-	AddressType int NULL,
-	Apartment varchar(10) NULL,
-	City varchar(30)  NULL,
-	Region varchar(25) NULL,
-	PostalCode int NULL
-)
 
 
 CREATE TABLE Products (
@@ -116,7 +115,7 @@ CREATE TABLE Employees (
 CREATE TABLE Orders
 
 (   OrderID int PRIMARY KEY IDENTITY (1,1) NOT NULL ,
-    OrderDetailID int  not null
+    OrderDetailID int  not null,
     CustomerID int NOT NULL ,
     DeliveryID int NOT NULL,
     TotalCost numeric (18,2) NULL,
