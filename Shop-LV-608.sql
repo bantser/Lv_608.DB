@@ -34,6 +34,33 @@ CREATE TABLE Returns(
        FOREIGN KEY (OrderDetailId) REFERENCES OrderDetails (OrderDetailId)
 )
 
+CREATE TABLE Brands(
+       BrandID int NOT NULL PRIMARY KEY IDENTITY(1,1)
+      ,BrandName nvarchar(50) NULL 
+      ,CountryOfManufacture nvarchar(50)NULL
+
+);
+
+
+CREATE TABLE Suppliers(
+     SupplID int NOT NULL PRIMARY KEY IDENTITY(1,1)
+    ,AdressID int NOT NULL
+    ,ContactName nvarchar(50) NULL
+    ,Phone int NULL
+    ,Email nvarchar(50) NULL,
+    HomePage nvarchar(50)
+
+);
+
+
+CREATE TABLE BrandSuppliers(
+   BrandID int NOT NULL FOREIGN KEY REFERENCES Brands(BrandID)
+  ,SupplID int NOT NULL FOREIGN KEY REFERENCES Suppliers(SupplID)
+  PRIMARY KEY(BrandID,SupplID)
+);
+
+
+
 CREATE TABLE PurchaseOrders(
 	PurchaseOrderID INT PRIMARY KEY IDENTITY NOT NULL,
 	SuplierID INT FOREIGN KEY REFERENCES Suppliers(SupplierID),
@@ -72,6 +99,7 @@ CREATE TABLE Employees (
     , Phone INT NOT NULL
     , Email NVARCHAR(30) NOT NULL
     , FOREIGN KEY (AddressID)  REFERENCES Addresses (AddressID) 
+
 )
 
 GO
