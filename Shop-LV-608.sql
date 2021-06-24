@@ -1,11 +1,6 @@
 
 
 
-USE [Test_608DB]
-GO
-
-
-
 
 /****** Object:  Table [dbo].[Table_1]    Script Date: 6/24/2021 2:51:26 PM ******/
 SET ANSI_NULLS ON
