@@ -36,3 +36,18 @@ CREATE TABLE Returns(
        , ReturnReason NVARCHAR(50) NULL
        , ReturnStatus NVARCHAR(50) NOT NULL
 )
+
+CREATE TABLE PurchaseOrders(
+	PurchaseOrderID INT PRIMARY KEY IDENTITY NOT NULL,
+	SuplierID INT FOREIGN KEY REFERENCES Suppliers(SupplierID),
+	EmployeeID INT FOREIGN KEY REFERENCES Employees(EmployeeID),
+	DeliveryDate DATE NOT NULL
+)
+
+CREATE TABLE PurchaseOrderDetails(
+	PurchaseOrderDetailID INT PRIMARY KEY IDENTITY NOT NULL,
+	PurchaseOrderID INT FOREIGN KEY REFERENCES PurchaseOrders(PurchaseOrderID),
+	ProductID INT FOREIGN KEY REFERENCES Products(ProductID),
+	Quantity INT NOT NULL,
+	Price NUMERIC NOT NULL
+)
