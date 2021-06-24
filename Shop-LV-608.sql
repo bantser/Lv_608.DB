@@ -55,11 +55,11 @@ CREATE TABLE PurchaseOrderDetails(
 
 CREATE TABLE Adress
 (
-	AddressID int PRIMARY KEY IDENTITY (1, 1),
-	AdressType int NOT NULL,
-	Appartament varchar(10) NOT NULL,
-	City varchar(30) NOT NULL,
-	Region varchar(25)NOT NULL,
-	PostaCode int NOT NULL
+	AddressID int PRIMARY KEY IDENTITY (1, 1) NOT NULL
+	AdressType int NULL,
+	Appartament varchar(10) NULL,
+	City varchar(30)  NULL,
+	Region varchar(25) NULL,
+	PostaCode int NULL
 )
 GO
