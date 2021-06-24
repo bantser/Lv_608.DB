@@ -104,31 +104,31 @@ CREATE TABLE Employees (
 
 CREATE TABLE Orders
 
-(   Orders_id int PRIMARY KEY IDENTITY (1,1) NOT NULL  ,
-    Customer_id int NOT NULL ,
-    Delivery_id int NOT NULL,
+(   OrderID int PRIMARY KEY IDENTITY (1,1) NOT NULL  ,
+    CustomerID int NOT NULL ,
+    DeliveryID int NOT NULL,
     TotalCost numeric (18,2) NULL,
     TotalDiscount numeric(18,2) NULL,
-    Empl_id int not NULL ,
+    EmployeID int not NULL ,
     OrderData datetime NULL,
     InvoiceData datetime NULL,
     PaymentMethod nvarchar (100) NULL,
 
- FOREIGN KEY(Customer_id) REFERENCES Customers(Customer_id),
- FOREIGN KEY(Delivery_id) REFERENCES Delivery(Delivery_id),
- FOREIGN KEY(Empl_id) REFERENCES Employees(Empl_id))
+ FOREIGN KEY(CustomerID) REFERENCES Customers(CustomerID),
+ FOREIGN KEY(DeliveryID) REFERENCES Deliveries(DeliveryID),
+ FOREIGN KEY(EmployeID) REFERENCES Employees(EmployeID))
 
  CREATE TABLE OrderDetails
  
- (   OrderDetail_id int PRIMARY KEY IDENTITY (1,1) NOT NULL ,
-     Order_id int NOT NULL,
-     Product_id int NOT NULL ,
+ (   OrderDetailID int PRIMARY KEY IDENTITY (1,1) NOT NULL ,
+     OrderID int NOT NULL,
+     ProductID int NOT NULL ,
      DiscountPerUnit numeric (18,2) NULL,
      PricePerUnit numeric (18,2) NULL,
      Quantity integer NULL,
 
-  FOREIGN KEY(Orders-id) REFERENCES Orders(Orders_id),
-  FOREIGN KEY(Product_id) REFERENCES Products(Product_id))
+  FOREIGN KEY(OrderID) REFERENCES Orders(OrderID),
+  FOREIGN KEY(ProductID) REFERENCES Products(ProductID))
   
 CREATE TABLE Deliveries(
        DeliveryID INT PRIMARY KEY IDENTITY NOT NULL
