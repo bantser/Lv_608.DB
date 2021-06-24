@@ -62,4 +62,20 @@ CREATE TABLE Adress
 	Region varchar(25) NULL,
 	PostaCode int NULL
 )
+
+
+
+CREATE TABLE Employees (
+      EmployeID INT IDENTITY(1, 1) PRIMARY KEY
+    , FirstName NVARCHAR(30) NOT NULL
+    , LastName NVARCHAR(30) NOT NULL
+    , Position NVARCHAR(30) NOT NULL
+    , AddressID INT NOT NULL
+    , Hire_date DATE NOT NULL
+    , Fire_date DATE 
+    , Phone INT NOT NULL
+    , Email NVARCHAR(30) NOT NULL
+    , FOREIGN KEY (AddressID)  REFERENCES Addresses (AddressID) 
+)
+
 GO
