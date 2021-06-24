@@ -10,3 +10,12 @@ CREATE TABLE Customers(
 	, AdressID INT
 	FOREIGN KEY (Adress_id) REFERENCES Adress (Adress_id)
 )
+
+CREATE TABLE Returns(
+       Return_ID int Not Null Primary Key
+       , OrderDetail_ID int Not Null
+       , ReturnQuantity int Not Null
+       , ReturnDate date Not null
+       , ReturnReason nvarchar(50) Null
+       , ReturnStatus nvarchar(30) Not Null
+)
