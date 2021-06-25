@@ -2,9 +2,9 @@ import csv
 import random
 from faker import Faker
 
-records=1000000
-fieldnames=['PurchaseOrderID','SuplierID','EmployeeID','DeliveryDate']
-filename = "data.csv"
+records = 1000000
+fieldnames = ['PurchaseOrderID','SuplierID','EmployeeID','DeliveryDate']
+filename = "PurchaseOrders.csv"
 fake = Faker()
 print(f"Making {records} records for {fieldnames}")
 
