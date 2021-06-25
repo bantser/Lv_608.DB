@@ -19,24 +19,40 @@ CREATE TABLE Addresses
 	PostalCode int NULL
 )
 
+If Object_ID ('Brands', 'U') IS NOT NULL
+DROP TABLE Brands
+
+
 CREATE TABLE Brands(
-       BrandID int NOT NULL PRIMARY KEY IDENTITY(1,1)
-      ,BrandName nvarchar(50) NULL 
-      ,CountryOfManufacture nvarchar(50)NULL)
+   BrandID int NOT NULL PRIMARY KEY IDENTITY(1,1)
+  ,BrandName nvarchar(50) NULL 
+  ,CountryOfManufacture nvarchar(50)NULL
+
+);
+
+If Object_ID ('Suppliers', 'U') IS NOT NULL
+DROP TABLE Suppliers
+GO
 
 CREATE TABLE Suppliers(
-     SupplID int NOT NULL PRIMARY KEY IDENTITY(1,1)
-    ,AddressID int FOREIGN KEY (AddressID) REFERENCES Addresses (AddressID)
-    ,ContactName nvarchar(50) NULL
-    ,Phone int NULL
-    ,Email nvarchar(50) NULL,
-    HomePage nvarchar(50))
+   SupplID int NOT NULL PRIMARY KEY IDENTITY(1,1)
+  ,AdressID int  NULL
+  ,ContactName nvarchar(50) NULL
+  ,Phone nvarchar(20) NULL
+  ,Email nvarchar(50) NULL
+);
+
+
+If Object_ID ('BrandSuppliers', 'U') IS NOT NULL
+DROP TABLE BrandSuppliers
+GO
 
 CREATE TABLE BrandSuppliers(
-   BrandID int NOT NULL FOREIGN KEY REFERENCES Brands(BrandID)
-  ,SupplID int NOT NULL FOREIGN KEY REFERENCES Suppliers(SupplID)
-  PRIMARY KEY(BrandID,SupplID)
-)
+  BrandID int FOREIGN KEY REFERENCES Brands(BrandID)
+ ,SupplID int FOREIGN KEY REFERENCES Suppliers(SupplID)
+ --PRIMARY KEY(BrandID,SupplID)
+);
+
 
 
 
