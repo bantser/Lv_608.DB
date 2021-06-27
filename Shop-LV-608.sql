@@ -59,14 +59,15 @@ CREATE TABLE BrandSuppliers(
 CREATE TABLE Products (
 
 	ProductID integer PRIMARY KEY IDENTITY (1, 1) NOT NULL
-	, ProductName nvarchar (30) NULL
+	, ProductName nvarchar (100) NULL
 	, QuantityInStock integer NULL
 	, SalesPrice numeric NULL
 	, TypeProduct nvarchar (30) NULL
-	, Gender nvarchar (1) NULL
+	, Gender nvarchar (10) NULL
 	, Season nvarchar (10) NULL
-	, Size nvarchar (2) NULL
+	, Size nvarchar (5) NULL
 	, BrandID integer
+	, Color nvarchar (30) NULL
 	FOREIGN KEY (BrandID) REFERENCES Brands (BrandID)
 	
 )
