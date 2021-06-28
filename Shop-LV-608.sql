@@ -13,9 +13,8 @@ CREATE TABLE Addresses
 (
 	AddressID int PRIMARY KEY IDENTITY (1, 1),
 	AddressType int NULL,
-	Apartment varchar(10) NULL,
-	City varchar(30)  NULL,
-	Region varchar(25) NULL,
+	Apartment nvarchar(45) NULL,
+	City nvarchar(45)  NULL,
 	PostalCode int NULL
 )
 
