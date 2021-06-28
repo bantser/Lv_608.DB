@@ -108,14 +108,7 @@ CREATE TABLE Employees (
 )
 
 
-  CREATE TABLE Returns(
-       ReturnID INT PRIMARY KEY IDENTITY NOT NULL
-       , Quantity int NULL
-       , Date date NULL
-       , Reason nvarchar(50) NULL
-       , Status nvarchar(30) NULL
 
-)
 
  CREATE TABLE OrderDetails
  
@@ -149,7 +142,14 @@ CREATE TABLE Orders
  FOREIGN KEY(EmployeeID) REFERENCES Employees(EmployeeID))
 
 
+  CREATE TABLE Returns(
+       ReturnID INT PRIMARY KEY IDENTITY NOT NULL
+       , Quantity int NULL
+       , Date date NULL
+       , Reason nvarchar(50) NULL
+       , Status nvarchar(30) NULL
 
+)
 
 CREATE TABLE PurchaseOrders(
 	PurchaseOrderID INT PRIMARY KEY IDENTITY NOT NULL,
