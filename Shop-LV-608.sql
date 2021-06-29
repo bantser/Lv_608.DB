@@ -13,9 +13,8 @@ CREATE TABLE Addresses
 (
 	AddressID int PRIMARY KEY IDENTITY (1, 1),
 	AddressType int NULL,
-	Apartment varchar(10) NULL,
-	City varchar(30)  NULL,
-	Region varchar(25) NULL,
+	Apartment nvarchar(45) NULL,
+	City nvarchar(45)  NULL,
 	PostalCode int NULL
 )
 
@@ -59,14 +58,15 @@ CREATE TABLE BrandSuppliers(
 CREATE TABLE Products (
 
 	ProductID integer PRIMARY KEY IDENTITY (1, 1) NOT NULL
-	, ProductName nvarchar (30) NULL
+	, ProductName nvarchar (100) NULL
 	, QuantityInStock integer NULL
 	, SalesPrice numeric NULL
 	, TypeProduct nvarchar (30) NULL
-	, Gender nvarchar (1) NULL
+	, Gender nvarchar (10) NULL
 	, Season nvarchar (10) NULL
-	, Size nvarchar (2) NULL
+	, Size nvarchar (5) NULL
 	, BrandID integer
+	, Color nvarchar (30) NULL
 	FOREIGN KEY (BrandID) REFERENCES Brands (BrandID)
 	
 )
@@ -108,14 +108,7 @@ CREATE TABLE Employees (
 )
 
 
-  CREATE TABLE Returns(
-       ReturnID INT PRIMARY KEY IDENTITY NOT NULL
-       , Quantity int NULL
-       , Date date NULL
-       , Reason nvarchar(50) NULL
-       , Status nvarchar(30) NULL
 
-)
 
  CREATE TABLE OrderDetails
  
@@ -150,7 +143,14 @@ CREATE TABLE Orders
  FOREIGN KEY(EmployeeID) REFERENCES Employees(EmployeeID))
 
 
+  CREATE TABLE Returns(
+       ReturnID INT PRIMARY KEY IDENTITY NOT NULL
+       , Quantity int NULL
+       , Date date NULL
+       , Reason nvarchar(50) NULL
+       , Status nvarchar(30) NULL
 
+)
 
 CREATE TABLE PurchaseOrders(
 	PurchaseOrderID INT PRIMARY KEY IDENTITY NOT NULL,
