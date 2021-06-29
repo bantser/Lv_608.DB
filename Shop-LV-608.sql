@@ -113,23 +113,24 @@ CREATE TABLE Employees (
  CREATE TABLE OrderDetails
  
  (   OrderID int NOT NULL,
-     OrderDetailID int IDENTITY (1,1) NOT NULL ,
+     OrderDetailID int NOT NULL ,
      ProductID int NOT NULL ,
      DiscountPerUnit numeric (18,2) NULL,
      PricePerUnit numeric (18,2) NULL,
      Quantity integer NULL,
-	 ReturnID int NOT NULL,
+	 DeliveryID int NOT NULL,
 	 
   PRIMARY KEY (OrderID, OrderDetailID),
   FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
-  FOREIGN KEY(ReturnID) REFERENCES Returns(ReturnID)
-  FOREIGN KEY(ProductID) REFERENCES Products(ProductID))
+  FOREIGN KEY(ProductID) REFERENCES Products(ProductID),
+  FOREIGN KEY(DeliveryID) REFERENCES Deliveries(DeliveryID)
+   
+   )
 
 CREATE TABLE Orders
 
 (   OrderID int PRIMARY KEY IDENTITY (1,1) NOT NULL ,
     CustomerID int NOT NULL ,
-    DeliveryID int NOT NULL,
     TotalCost numeric (18,2) NULL,
     TotalDiscount numeric(18,2) NULL,
     EmployeeID int not NULL ,
@@ -139,7 +140,6 @@ CREATE TABLE Orders
   
 
  FOREIGN KEY(CustomerID) REFERENCES Customers(CustomerID),
- FOREIGN KEY(DeliveryID) REFERENCES Deliveries(DeliveryID),
  FOREIGN KEY(EmployeeID) REFERENCES Employees(EmployeeID))
 
 
