@@ -13,9 +13,8 @@ CREATE TABLE Addresses
 (
 	AddressID int PRIMARY KEY IDENTITY (1, 1),
 	AddressType int NULL,
-	Apartment varchar(10) NULL,
-	City varchar(30)  NULL,
-	Region varchar(25) NULL,
+	Apartment nvarchar(45) NULL,
+	City nvarchar(45)  NULL,
 	PostalCode int NULL
 )
 
@@ -59,14 +58,15 @@ CREATE TABLE BrandSuppliers(
 CREATE TABLE Products (
 
 	ProductID integer PRIMARY KEY IDENTITY (1, 1) NOT NULL
-	, ProductName nvarchar (30) NULL
+	, ProductName nvarchar (100) NULL
 	, QuantityInStock integer NULL
 	, SalesPrice numeric NULL
 	, TypeProduct nvarchar (30) NULL
-	, Gender nvarchar (1) NULL
+	, Gender nvarchar (10) NULL
 	, Season nvarchar (10) NULL
-	, Size nvarchar (2) NULL
+	, Size nvarchar (5) NULL
 	, BrandID integer
+	, Color nvarchar (30) NULL
 	FOREIGN KEY (BrandID) REFERENCES Brands (BrandID)
 	
 )
@@ -108,6 +108,41 @@ CREATE TABLE Employees (
 )
 
 
+
+
+ CREATE TABLE OrderDetails
+ 
+ (   OrderID int NOT NULL,
+     OrderDetailID int NOT NULL ,
+     ProductID int NOT NULL ,
+     DiscountPerUnit numeric (18,2) NULL,
+     PricePerUnit numeric (18,2) NULL,
+     Quantity integer NULL,
+	 DeliveryID int NOT NULL,
+	 
+  PRIMARY KEY (OrderID, OrderDetailID),
+  FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+  FOREIGN KEY(ProductID) REFERENCES Products(ProductID),
+  FOREIGN KEY(DeliveryID) REFERENCES Deliveries(DeliveryID)
+   
+   )
+
+CREATE TABLE Orders
+
+(   OrderID int PRIMARY KEY IDENTITY (1,1) NOT NULL ,
+    CustomerID int NOT NULL ,
+    TotalCost numeric (18,2) NULL,
+    TotalDiscount numeric(18,2) NULL,
+    EmployeeID int not NULL ,
+    OrderData datetime NULL,
+    InvoiceData datetime NULL,
+    PaymentMethod nvarchar (100) NULL,
+  
+
+ FOREIGN KEY(CustomerID) REFERENCES Customers(CustomerID),
+ FOREIGN KEY(EmployeeID) REFERENCES Employees(EmployeeID))
+
+
   CREATE TABLE Returns(
        ReturnID INT PRIMARY KEY IDENTITY NOT NULL
        , Quantity int NULL
@@ -116,40 +151,6 @@ CREATE TABLE Employees (
        , Status nvarchar(30) NULL
 
 )
-
- CREATE TABLE OrderDetails
- 
- (   OrderDetailID int PRIMARY KEY IDENTITY (1,1) NOT NULL ,
-     ProductID int NOT NULL ,
-     DiscountPerUnit numeric (18,2) NULL,
-     PricePerUnit numeric (18,2) NULL,
-     Quantity integer NULL,
-
-
-  FOREIGN KEY(ProductID) REFERENCES Products(ProductID))
-
-CREATE TABLE Orders
-
-(   OrderID int PRIMARY KEY IDENTITY (1,1) NOT NULL ,
-    OrderDetailID int  not null,
-    CustomerID int NOT NULL ,
-    DeliveryID int NOT NULL,
-    TotalCost numeric (18,2) NULL,
-    TotalDiscount numeric(18,2) NULL,
-    EmployeeID int not NULL ,
-    OrderData datetime NULL,
-    InvoiceData datetime NULL,
-    PaymentMethod nvarchar (100) NULL,
-    ReturnID INT,
-
- FOREIGN KEY(CustomerID) REFERENCES Customers(CustomerID),
- FOREIGN KEY(DeliveryID) REFERENCES Deliveries(DeliveryID),
- FOREIGN KEY(OrderDetailID) REFERENCES OrderDetails(OrderDetailID),
- FOREIGN KEY (ReturnID) REFERENCES Returns (ReturnID),
- FOREIGN KEY(EmployeeID) REFERENCES Employees(EmployeeID))
-
-
-
 
 CREATE TABLE PurchaseOrders(
 	PurchaseOrderID INT PRIMARY KEY IDENTITY NOT NULL,
