@@ -101,8 +101,8 @@ CREATE TABLE Employees (
     , AddressID INT NOT NULL
     , Hire_date DATE NOT NULL
     , Fire_date DATE 
-    , Phone INT NOT NULL
-    , Email NVARCHAR(30) NOT NULL
+    , Phone NVARCHAR(30) NOT NULL
+    , Email NVARCHAR(50) NOT NULL
     , FOREIGN KEY (AddressID)  REFERENCES Addresses (AddressID) 
 
 )
