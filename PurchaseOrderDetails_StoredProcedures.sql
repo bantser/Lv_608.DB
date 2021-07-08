@@ -1,227 +1,165 @@
+USE [Shop LV-608.db];
 
 
-CREATE PROCEDURE GetPurchaseOrders
-AS
-BEGIN
-SET NOCOUNT ON
- 
-SELECT PO.PurchaseOrderID, PO.SuplierID 'SupplierID', PO.EmployeeID, PO.DeliveryDate,
-	POD.ProductID, POD.Quantity, POD.Price
-FROM PurchaseOrders PO
-INNER JOIN PurchaseOrderDetails POD
+IF OBJECT_ID('dbo.vw_PurchaseOrders', 'V') IS NOT NULL
+    DROP VIEW dbo.vw_PurchaseOrders
+GO
+
+CREATE VIEW dbo.vw_PurchaseOrders AS
+SELECT
+	PO.PurchaseOrderID,
+	PO.SuplierID 'SupplierID',
+	PO.EmployeeID,
+	PO.DeliveryDate,
+	POD.ProductID,
+	POD.Quantity,
+	POD.Price
+FROM [Shop LV-608.db].[dbo].[PurchaseOrders] AS PO
+INNER JOIN [Shop LV-608.db].[dbo].[PurchaseOrderDetails] AS POD
 ON PO.PurchaseOrderID = POD.PurchaseOrderDetailID
- 
-END
+GO
+
+SELECT * FROM dbo.vw_PurchaseOrders
 
 
-CREATE PROCEDURE GetPurchaseOrderByID
-(@PurchaseOrderID INT)
-AS
-BEGIN
-SET NOCOUNT ON
- 
-SELECT PO.PurchaseOrderID, PO.SuplierID 'SupplierID', PO.EmployeeID, PO.DeliveryDate,
-	POD.ProductID, POD.Quantity, POD.Price
-FROM PurchaseOrders PO
-INNER JOIN PurchaseOrderDetails POD
+IF OBJECT_ID('dbo.vw_FullPurchaseOrders', 'V') IS NOT NULL
+    DROP VIEW dbo.vw_FullPurchaseOrders
+GO
+	CREATE VIEW dbo.vw_FullPurchaseOrders AS
+	SELECT
+		PO.PurchaseOrderID,
+		P.ProductID,
+		P.ProductName 'ProdName',
+		P.SalesPrice 'ProdSalesPrice',
+		P.TypeProduct 'ProdType',
+		B.BrandName 'ProdBrandName',
+		PO.DeliveryDate,
+		POD.Quantity,
+		POD.Price, 
+		S.SupplierID,
+		S.AddressID 'SupAddressID',
+		S.ContactName 'SupContactName',
+		S.Phone 'SupPhone',
+		S.Email 'SupEmail',
+		E.EmployeeID,
+		E.FirstName +' ' + E.LastName 'EmpContactName', 
+		E.Position 'EmpPosition',
+		E.AddressID 'EmpAddressID',
+		E.Phone 'EmpPhone',
+		E.Email 'EmpEmail'
+	FROM [Shop LV-608.db].[dbo].[PurchaseOrders] AS PO
+	INNER JOIN [Shop LV-608.db].[dbo].[PurchaseOrderDetails] AS POD
+	ON PO.PurchaseOrderID = POD.PurchaseOrderDetailID
+	INNER JOIN [Shop LV-608.db].[dbo].[Products] AS P
+	ON POD.ProductID = P.ProductID
+	LEFT JOIN [Shop LV-608.db].[dbo].[Brands] AS B
+	ON P.BrandID = B.BrandID
+	LEFT JOIN [Shop LV-608.db].[dbo].[Suppliers] S
+	ON PO.SuplierID = S.SupplierID
+	LEFT JOIN [Shop LV-608.db].[dbo].[Employees] AS E
+	ON PO.EmployeeID = E.EmployeeID
+GO
+
+SELECT * FROM dbo.vw_FullPurchaseOrders
+
+
+-- Get top N Suppliers 
+SELECT TOP 3 
+	S.SupplierID,
+	S.AddressID 'SupAddressID',
+	S.ContactName 'SupContactName',
+	S.Phone 'SupPhone',
+	S.Email 'SupEmail',
+	SUM(POD.Quantity * POD.Price) 'TotalDealSum'
+FROM [Shop LV-608.db].[dbo].[PurchaseOrders] PO
+	INNER JOIN [Shop LV-608.db].[dbo].[PurchaseOrderDetails] AS POD
+	ON PO.PurchaseOrderID = POD.PurchaseOrderDetailID
+	INNER JOIN [Shop LV-608.db].[dbo].[Suppliers] AS S
+	ON PO.SuplierID = S.SupplierID
+	GROUP BY S.SupplierID,
+		S.AddressID,
+		S.ContactName,
+		S.Phone,
+		S.Email
+	ORDER BY TotalDealSum DESC
+
+
+-- Select cumulative deal size for each Supplier 
+SELECT
+	PO.SuplierID 'SupplierID',
+	PO.DeliveryDate,
+	POD.Quantity,
+	POD.Price,
+	SUM(POD.Quantity * POD.Price) OVER (PARTITION BY PO.SuplierID ORDER BY PO.DeliveryDate) 'CumulativeDeal'
+FROM [Shop LV-608.db].[dbo].[PurchaseOrders] PO
+INNER JOIN [Shop LV-608.db].[dbo].[PurchaseOrderDetails] POD
 ON PO.PurchaseOrderID = POD.PurchaseOrderDetailID
-WHERE PO.PurchaseOrderID =@PurchaseOrderID
- 
-END
+ORDER BY PO.SuplierID, DeliveryDate
 
 
-CREATE PROCEDURE GetFullPurchaseOrders
-AS
-BEGIN
-SET NOCOUNT ON
- 
-SELECT PO.PurchaseOrderID,
-	P.ProductID, P.ProductName 'ProdName', P.SalesPrice 'ProdSalesPrice', P.TypeProduct 'ProdType',
-	B.BrandName 'ProdBrandName',
-	PO.DeliveryDate, POD.Quantity, POD.Price, 
-	S.SupplierID, S.AddressID 'SupAddressID', S.ContactName 'SupContactName', S.Phone 'SupPhone', S.Email 'SupEmail',
-	E.EmployeeID, E.FirstName +' ' + E.LastName 'EmpContactName', E.Position 'EmpPosition', E.AddressID 'EmpAddressID', E.Phone 'EmpPhone', E.Email 'EmpEmail'
-FROM PurchaseOrders PO
-INNER JOIN PurchaseOrderDetails POD
-ON PO.PurchaseOrderID = POD.PurchaseOrderDetailID
-INNER JOIN Products P
-ON POD.ProductID = P.ProductID
-LEFT JOIN Brands B
-ON P.BrandID = B.BrandID
-LEFT JOIN Suppliers S
-ON PO.SuplierID = S.SupplierID
-LEFT JOIN Employees E
-ON PO.EmployeeID = E.EmployeeID
- 
-END
+-- Delete repeated rows in table in optimal way
+;WITH numbered AS (
+	SELECT
+		PurchaseOrderID,
+		SuplierID 'SupplierID',
+		EmployeeID, 
+		DeliveryDate,
+		row_number() OVER (
+			PARTITION BY PurchaseOrderID 
+			ORDER BY PurchaseOrderID
+		) row_num
+	FROM [Shop LV-608.db].[dbo].[PurchaseOrders]
+)
+DELETE FROM numbered
+WHERE row_num <> 1 
 
 
-CREATE PROCEDURE GetFullPurchaseOrdersByID
-(@PurOrderID INT)
-AS
-BEGIN
-SET NOCOUNT ON
- 
-SELECT PO.PurchaseOrderID,
-	P.ProductID, P.ProductName 'ProdName', P.SalesPrice 'ProdSalesPrice', P.TypeProduct 'ProdType',
-	B.BrandName 'ProdBrandName',
-	PO.DeliveryDate, POD.Quantity, POD.Price, 
-	S.SupplierID, S.AddressID 'SupAddressID', S.ContactName 'SupContactName', S.Phone 'SupPhone', S.Email 'SupEmail',
-	E.EmployeeID, E.FirstName +' ' + E.LastName 'EmpContactName', E.Position 'EmpPosition', E.AddressID 'EmpAddressID', E.Phone 'EmpPhone', E.Email 'EmpEmail'
-FROM PurchaseOrders PO
-INNER JOIN PurchaseOrderDetails POD
-ON PO.PurchaseOrderID = POD.PurchaseOrderDetailID
-INNER JOIN Products P
-ON POD.ProductID = P.ProductID
-LEFT JOIN Brands B
-ON P.BrandID = B.BrandID
-LEFT JOIN Suppliers S
-ON PO.SuplierID = S.SupplierID
-LEFT JOIN Employees E
-ON PO.EmployeeID = E.EmployeeID
-WHERE PO.PurchaseOrderID = @PurOrderID
- 
-END
 
-
-CREATE PROCEDURE GetFullPurchaseOrdersByProductID
-(@ProductID INT)
-AS
-BEGIN
-SET NOCOUNT ON
- 
-SELECT PO.PurchaseOrderID,
-	P.ProductID, P.ProductName 'ProdName', P.SalesPrice 'ProdSalesPrice', P.TypeProduct 'ProdType',
-	B.BrandName 'ProdBrandName',
-	PO.DeliveryDate, POD.Quantity, POD.Price, 
-	S.SupplierID, S.AddressID 'SupAddressID', S.ContactName 'SupContactName', S.Phone 'SupPhone', S.Email 'SupEmail',
-	E.EmployeeID, E.FirstName +' ' + E.LastName 'EmpContactName', E.Position 'EmpPosition', E.AddressID 'EmpAddressID', E.Phone 'EmpPhone', E.Email 'EmpEmail'
-FROM PurchaseOrders PO
-INNER JOIN PurchaseOrderDetails POD
-ON PO.PurchaseOrderID = POD.PurchaseOrderDetailID
-INNER JOIN Products P
-ON POD.ProductID = P.ProductID
-LEFT JOIN Brands B
-ON P.BrandID = B.BrandID
-LEFT JOIN Suppliers S
-ON PO.SuplierID = S.SupplierID
-LEFT JOIN Employees E
-ON PO.EmployeeID = E.EmployeeID
-WHERE P.ProductID = @ProductID
- 
-END
-
-
-CREATE PROCEDURE GetFullPurchaseOrdersBySupplierID
-(@SupplierID INT)
-AS
-BEGIN
-SET NOCOUNT ON
- 
-SELECT PO.PurchaseOrderID,
-	P.ProductID, P.ProductName 'ProdName', P.SalesPrice 'ProdSalesPrice', P.TypeProduct 'ProdType',
-	B.BrandName 'ProdBrandName',
-	PO.DeliveryDate, POD.Quantity, POD.Price, 
-	S.SupplierID, S.AddressID 'SupAddressID', S.ContactName 'SupContactName', S.Phone 'SupPhone', S.Email 'SupEmail',
-	E.EmployeeID, E.FirstName +' ' + E.LastName 'EmpContactName', E.Position 'EmpPosition', E.AddressID 'EmpAddressID', E.Phone 'EmpPhone', E.Email 'EmpEmail'
-FROM PurchaseOrders PO
-INNER JOIN PurchaseOrderDetails POD
-ON PO.PurchaseOrderID = POD.PurchaseOrderDetailID
-INNER JOIN Products P
-ON POD.ProductID = P.ProductID
-LEFT JOIN Brands B
-ON P.BrandID = B.BrandID
-LEFT JOIN Suppliers S
-ON PO.SuplierID = S.SupplierID
-LEFT JOIN Employees E
-ON PO.EmployeeID = E.EmployeeID
-WHERE S.SupplierID = @SupplierID
- 
-END
-
-
-CREATE PROCEDURE GetFullPurchaseOrdersByEmployeeID
-(@EmployeeID INT)
-AS
-BEGIN
-SET NOCOUNT ON
- 
-SELECT PO.PurchaseOrderID,
-	P.ProductID, P.ProductName 'ProdName', P.SalesPrice 'ProdSalesPrice', P.TypeProduct 'ProdType',
-	B.BrandName 'ProdBrandName',
-	PO.DeliveryDate, POD.Quantity, POD.Price, 
-	S.SupplierID, S.AddressID 'SupAddressID', S.ContactName 'SupContactName', S.Phone 'SupPhone', S.Email 'SupEmail',
-	E.EmployeeID, E.FirstName +' ' + E.LastName 'EmpContactName', E.Position 'EmpPosition', E.AddressID 'EmpAddressID', E.Phone 'EmpPhone', E.Email 'EmpEmail'
-FROM PurchaseOrders PO
-INNER JOIN PurchaseOrderDetails POD
-ON PO.PurchaseOrderID = POD.PurchaseOrderDetailID
-INNER JOIN Products P
-ON POD.ProductID = P.ProductID
-LEFT JOIN Brands B
-ON P.BrandID = B.BrandID
-LEFT JOIN Suppliers S
-ON PO.SuplierID = S.SupplierID
-LEFT JOIN Employees E
-ON PO.EmployeeID = E.EmployeeID
-WHERE E.EmployeeID = @EmployeeID
- 
-END
-
-
-CREATE PROCEDURE InsertPurchaseOrders
+-- Stored procedure to insert values into PurchaseOrders and PurchaseOrderDetails table
+IF OBJECT_ID(N'dbo.spr_InsertPurchaseOrders', N'P') IS NOT NULL
+	DROP PROCEDURE dbo.spr_InsertPurchaseOrders;
+GO
+CREATE PROCEDURE dbo.spr_InsertPurchaseOrders
 (@SupplierID INT, @EmployeeID INT, @DeliveryDate DATE, @ProductID INT, @Quantity INT, @Price NUMERIC)
 AS
 BEGIN
 SET NOCOUNT ON
 
-INSERT INTO PurchaseOrders
-		(SuplierID, 
+INSERT INTO [Shop LV-608.db].[dbo].[PurchaseOrders] (
+		SuplierID, 
 		EmployeeID, 
-		DeliveryDate)
-	VALUES
-		(@SupplierID,
+		DeliveryDate
+	)
+	VALUES (
+		@SupplierID,
 		@EmployeeID, 
-		@DeliveryDate);
+		@DeliveryDate
+	)
 
 DECLARE @PurchaseOrderID INT;
 SET @PurchaseOrderID = (
 	SELECT MAX(PurchaseOrderID)
-	FROM PurchaseOrders
+	FROM [Shop LV-608.db].[dbo].[PurchaseOrders]
 	WHERE SuplierID = @SupplierID
 	AND EmployeeID = @EmployeeID
 	AND DeliveryDate = @DeliveryDate
-);
+)
 
-INSERT INTO PurchaseOrderDetails
-		(PurchaseOrderID,
+INSERT INTO [Shop LV-608.db].[dbo].[PurchaseOrderDetails] (
+		PurchaseOrderID,
 		ProductID,
 		Quantity, 
-		Price)
-	VALUES
-		(@PurchaseOrderID,
+		Price
+	)
+	VALUES (
+		@PurchaseOrderID,
 		@ProductID,
 		@Quantity,
-		@Price);
- 
+		@Price
+	)
 END
 
-
-
-EXEC GetPurchaseOrders
-
-EXEC GetPurchaseOrderByID 3
-
-EXEC GetFullPurchaseOrders
-
-EXEC GetFullPurchaseOrdersByID 3
-
-EXEC GetFullPurchaseOrdersByProductID 3
-
-EXEC GetFullPurchaseOrdersBySupplierID 2
-
-EXEC GetFullPurchaseOrdersByEmployeeID 122
-
-EXEC InsertPurchaseOrders 
+EXEC dbo.spr_InsertPurchaseOrders 
 	@SupplierID = 1,
 	@EmployeeID = 1,
 	@DeliveryDate = '2021-01-01',
@@ -229,11 +167,3 @@ EXEC InsertPurchaseOrders
 	@Quantity = 1,
 	@Price = 1.1
 GO
-
-SELECT *
-	FROM PurchaseOrders po
-	INNER JOIN PurchaseOrderDetails pod
-	ON po.PurchaseOrderID = pod.PurchaseOrderDetailID
-	WHERE SuplierID = 1
-	AND EmployeeID = 1
-	AND DeliveryDate = '2021-01-01'
