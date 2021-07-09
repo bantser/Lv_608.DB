@@ -4,7 +4,6 @@ USE [Shop LV-608.db];
 IF OBJECT_ID('dbo.vw_PurchaseOrders', 'V') IS NOT NULL
     DROP VIEW dbo.vw_PurchaseOrders
 GO
-
 CREATE VIEW dbo.vw_PurchaseOrders AS
 SELECT
 	PO.PurchaseOrderID,
@@ -63,38 +62,64 @@ GO
 SELECT * FROM dbo.vw_FullPurchaseOrders
 
 
--- Get top N Suppliers 
-SELECT TOP 3 
-	S.SupplierID,
-	S.AddressID 'SupAddressID',
-	S.ContactName 'SupContactName',
-	S.Phone 'SupPhone',
-	S.Email 'SupEmail',
-	SUM(POD.Quantity * POD.Price) 'TotalDealSum'
-FROM [Shop LV-608.db].[dbo].[PurchaseOrders] PO
-	INNER JOIN [Shop LV-608.db].[dbo].[PurchaseOrderDetails] AS POD
-	ON PO.PurchaseOrderID = POD.PurchaseOrderDetailID
-	INNER JOIN [Shop LV-608.db].[dbo].[Suppliers] AS S
-	ON PO.SuplierID = S.SupplierID
-	GROUP BY S.SupplierID,
-		S.AddressID,
-		S.ContactName,
-		S.Phone,
-		S.Email
-	ORDER BY TotalDealSum DESC
+-- Get top N Suppliers
+IF OBJECT_ID('dbo.udf_TopNSuppliers', 'TF') IS NOT NULL
+BEGIN
+    DROP FUNCTION [dbo].[udf_TopNSuppliers]
+END
+GO
+CREATE FUNCTION udf_TopNSuppliers (
+	@Number INT = 3
+)
+RETURNS TABLE
+AS
+RETURN
+	SELECT TOP (@Number)
+		S.SupplierID,
+		S.AddressID 'SupAddressID',
+		S.ContactName 'SupContactName',
+		S.Phone 'SupPhone',
+		S.Email 'SupEmail',
+		SUM(POD.Quantity * POD.Price) 'TotalDealSum'
+	FROM [Shop LV-608.db].[dbo].[PurchaseOrders] PO
+		INNER JOIN [Shop LV-608.db].[dbo].[PurchaseOrderDetails] AS POD
+		ON PO.PurchaseOrderID = POD.PurchaseOrderDetailID
+		INNER JOIN [Shop LV-608.db].[dbo].[Suppliers] AS S
+		ON PO.SuplierID = S.SupplierID
+		GROUP BY S.SupplierID,
+			S.AddressID,
+			S.ContactName,
+			S.Phone,
+			S.Email
+		ORDER BY TotalDealSum DESC
+
+SELECT * FROM udf_TopNSuppliers(5)
 
 
 -- Select cumulative deal size for each Supplier 
-SELECT
-	PO.SuplierID 'SupplierID',
-	PO.DeliveryDate,
-	POD.Quantity,
-	POD.Price,
-	SUM(POD.Quantity * POD.Price) OVER (PARTITION BY PO.SuplierID ORDER BY PO.DeliveryDate) 'CumulativeDeal'
-FROM [Shop LV-608.db].[dbo].[PurchaseOrders] PO
-INNER JOIN [Shop LV-608.db].[dbo].[PurchaseOrderDetails] POD
-ON PO.PurchaseOrderID = POD.PurchaseOrderDetailID
-ORDER BY PO.SuplierID, DeliveryDate
+IF OBJECT_ID('dbo.udf_CumulativeSupplierDeal', 'TF') IS NOT NULL
+BEGIN
+    DROP FUNCTION [dbo].udf_CumulativeSupplierDeal
+END
+GO
+CREATE FUNCTION udf_CumulativeSupplierDeal()
+RETURNS TABLE
+AS
+RETURN
+	SELECT
+		PO.SuplierID 'SupplierID',
+		PO.DeliveryDate,
+		POD.Quantity,
+		POD.Price,
+		SUM(POD.Quantity * POD.Price) OVER (PARTITION BY PO.SuplierID ORDER BY PO.DeliveryDate) 'CumulativeDeal'
+	FROM [Shop LV-608.db].[dbo].[PurchaseOrders] PO
+		INNER JOIN [Shop LV-608.db].[dbo].[PurchaseOrderDetails] POD
+		ON PO.PurchaseOrderID = POD.PurchaseOrderID
+GO
+
+SELECT * 
+FROM udf_CumulativeSupplierDeal()
+ORDER BY SupplierID, DeliveryDate
 
 
 -- Delete repeated rows in table in optimal way
