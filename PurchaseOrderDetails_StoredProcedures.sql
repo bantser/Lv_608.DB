@@ -98,6 +98,14 @@ ORDER BY PO.SuplierID, DeliveryDate
 
 
 -- Delete repeated rows in table in optimal way
+IF OBJECT_ID(N'dbo.spr_RemovePurchaseOrdersDuplicates', N'P') IS NOT NULL
+	DROP PROCEDURE dbo.spr_RemovePurchaseOrdersDuplicates;
+GO
+CREATE PROCEDURE dbo.spr_RemovePurchaseOrdersDuplicates
+AS
+BEGIN
+SET NOCOUNT ON
+
 ;WITH numbered AS (
 	SELECT
 		PurchaseOrderID,
@@ -112,7 +120,9 @@ ORDER BY PO.SuplierID, DeliveryDate
 )
 DELETE FROM numbered
 WHERE row_num <> 1 
+END
 
+EXEC spr_RemovePurchaseOrdersDuplicates
 
 
 -- Stored procedure to insert values into PurchaseOrders and PurchaseOrderDetails table
