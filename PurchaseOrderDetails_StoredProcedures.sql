@@ -135,38 +135,55 @@ AS
 BEGIN
 SET NOCOUNT ON
 
-INSERT INTO [Shop LV-608.db].[dbo].[PurchaseOrders] (
-		SuplierID, 
-		EmployeeID, 
-		DeliveryDate
-	)
-	VALUES (
-		@SupplierID,
-		@EmployeeID, 
-		@DeliveryDate
+DECLARE @ErrorMessage NVARCHAR(4000)
+
+EXEC dbo.[spr_LogProcess] 'spr_InsertPurchaseOrders', 'Start'
+
+BEGIN TRY
+	-- Insert values into PurchaseOrders
+	INSERT INTO [Shop LV-608.db].[dbo].[PurchaseOrders] (
+			SuplierID, 
+			EmployeeID, 
+			DeliveryDate
+		)
+		VALUES (
+			@SupplierID,
+			@EmployeeID, 
+			@DeliveryDate
+		)
+
+	-- Get inserted row ID
+	DECLARE @PurchaseOrderID INT;
+	SET @PurchaseOrderID = (
+		SELECT MAX(PurchaseOrderID)
+		FROM [Shop LV-608.db].[dbo].[PurchaseOrders]
+		WHERE SuplierID = @SupplierID
+		AND EmployeeID = @EmployeeID
+		AND DeliveryDate = @DeliveryDate
 	)
 
-DECLARE @PurchaseOrderID INT;
-SET @PurchaseOrderID = (
-	SELECT MAX(PurchaseOrderID)
-	FROM [Shop LV-608.db].[dbo].[PurchaseOrders]
-	WHERE SuplierID = @SupplierID
-	AND EmployeeID = @EmployeeID
-	AND DeliveryDate = @DeliveryDate
-)
+	-- Insert values into PurchaseOrderDetails
+	INSERT INTO [Shop LV-608.db].[dbo].[PurchaseOrderDetails] (
+			PurchaseOrderID,
+			ProductID,
+			Quantity, 
+			Price
+		)
+		VALUES (
+			@PurchaseOrderID,
+			@ProductID,
+			@Quantity,
+			@Price
+		)
+END TRY
+BEGIN CATCH  
+    SELECT 
+        @ErrorMessage = ERROR_MESSAGE()
 
-INSERT INTO [Shop LV-608.db].[dbo].[PurchaseOrderDetails] (
-		PurchaseOrderID,
-		ProductID,
-		Quantity, 
-		Price
-	)
-	VALUES (
-		@PurchaseOrderID,
-		@ProductID,
-		@Quantity,
-		@Price
-	)
+	EXEC dbo.[spr_LogProcess] 'spr_InsertPurchaseOrders', 'Fatal', @ErrorDescription = @ErrorMessage 
+END CATCH
+
+EXEC dbo.[spr_LogProcess] 'spr_InsertPurchaseOrders', 'Stop', @TableName = 'PurchaseOrders', @InsertedCount = 1
 END
 
 EXEC dbo.spr_InsertPurchaseOrders 
@@ -174,6 +191,6 @@ EXEC dbo.spr_InsertPurchaseOrders
 	@EmployeeID = 1,
 	@DeliveryDate = '2021-01-01',
 	@ProductID = 1,
-	@Quantity = 1,
-	@Price = 1.1
+	@Quantity = 0,
+	@Price = 1.
 GO
