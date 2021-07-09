@@ -165,7 +165,8 @@ CREATE TABLE PurchaseOrderDetails(
 	PurchaseOrderID INT FOREIGN KEY REFERENCES PurchaseOrders(PurchaseOrderID),
 	ProductID INT FOREIGN KEY REFERENCES Products(ProductID),
 	Quantity INT NOT NULL,
-	Price NUMERIC NOT NULL
+	Price NUMERIC NOT NULL,
+	CONSTRAINT QuantityPriceCheck CHECK (Quantity > 0 AND Price > 0)
 )
 
 
